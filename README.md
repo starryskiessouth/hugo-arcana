@@ -16,6 +16,28 @@ item to work correctly.
 You can add your own styles in your site's `assets/sass/custom.scss`, which is
 included at the end of the theme's `main.scss`.
 
+### Responsive images
+Page images (`image` front matter, Markdown images, and the homepage banner)
+are resized into WebP `srcset`s when Hugo can find them under `assets/`.
+Images in `static/` can't be processed directly, so mount your upload folder
+into `assets/` as well, e.g. for a CMS uploading to `static/images/uploads`:
+
+```toml
+[module]
+    [[module.mounts]]
+        source = "static"
+        target = "static"
+    [[module.mounts]]
+        source = "assets"
+        target = "assets"
+    [[module.mounts]]
+        source = "static/images/uploads"
+        target = "assets/images/uploads"
+```
+
+Images that can't be found as resources (or are GIF/SVG/external URLs) are
+output unchanged.
+
 ## Showcase
 If you use this theme, let me know, and I'll list your site here!
 - [Theme Demo Site](https://sec.gd/hugo/themes/arcana/)

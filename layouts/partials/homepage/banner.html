@@ -1,3 +1,25 @@
+{{- /*
+  The banner background is set here rather than in main.scss so that, when the
+  image is available as a resource (assets/, or a mount into assets/), resized
+  versions are served per screen width instead of the full-size original.
+*/ -}}
+{{- $src := .image | default "images/banner.jpg" }}
+{{- $img := false }}
+{{- if not (strings.Contains $src "://") }}{{ $img = resources.Get (strings.TrimPrefix "/" $src) }}{{ end }}
+<style>
+{{- if and $img (in (slice "jpeg" "png" "webp") $img.MediaType.SubType) }}
+  {{- $set := partial "responsive-img-set.html" $img }}
+  {{- $small := $set.fallback }}
+  {{- $large := $small }}
+  {{- range $w, $r := $set.images }}{{ if gt $r.Width $large.Width }}{{ $large = $r }}{{ end }}{{ end }}
+  {{- $medium := index $set.images "1600" | default $large }}
+  #banner { background-image: url({{ $large.RelPermalink | safeCSS }}); }
+  @media screen and (max-width: 1680px) { #banner { background-image: url({{ $medium.RelPermalink | safeCSS }}); } }
+  @media screen and (max-width: 980px) { #banner { background-image: url({{ $small.RelPermalink | safeCSS }}); } }
+{{- else }}
+  #banner { background-image: url({{ $src | relURL | safeCSS }}); }
+{{- end }}
+</style>
 <section id="banner">
     <header>
         <h2>{{ .contents | markdownify }}</h2>
